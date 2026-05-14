@@ -1,4 +1,14 @@
+# CI — portões automatizáveis alinhados a .github/CORRECTNESS_GATES.md
+# (Análise semântica profunda de diffs não corre no runner; ver documentação.)
+
 name: CI
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 on:
   push:
@@ -6,14 +16,52 @@ on:
   pull_request:
 
 jobs:
-  validate:
+  correctness:
+    name: Critical correctness gates
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: '1.3.13'
-      - run: bun install --frozen-lockfile
-      - run: bun run lint
-      - run: bun run build
-      - run: bun run test
+
+      - name: Install
+        run: bun install --frozen-lockfile
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Typecheck and production build
+        run: bun run build
+
+      - name: Tests
+        run: bun run test
+
+      - name: Dependency audit
+        run: bun audit
+
+      - name: Summary (success)
+        if: success()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" << 'EOF'
+          ## CI — critical correctness gates
+
+          Automated gates passed: **lint**, **TypeScript + Vite build**, **Vitest**, **`bun audit`**.
+
+          This does **not** replace deep semantic review (data loss, races, silent truncation, auth bypasses, etc.). See [`.github/CORRECTNESS_GATES.md`](.github/CORRECTNESS_GATES.md).
+
+          **Outcome:** no critical signals in the automated gates for this run.
+          EOF
+
+      - name: Summary (failure)
+        if: failure()
+        run: |
+          {
+            echo '## CI failed'
+            echo ''
+            echo 'At least one automated gate failed (lint, build, tests, or audit). Fix before merge.'
+            echo 'Rubric: .github/CORRECTNESS_GATES.md'
+          } >> "$GITHUB_STEP_SUMMARY"

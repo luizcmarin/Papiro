@@ -1,5 +1,5 @@
-import type { TemaVisual } from '../tema.js';
-import { alternarTemaBreu, obterTemaPreferido } from '../tema.js';
+import { EVENTO_TEMA_VISUAL_ATUALIZADO, obterTemaPreferido } from '../tema.js';
+import { instalarBotaoCicloTema } from '../tema-controle-ui.js';
 import {
   CHAVE_IDIOMA_UI,
   obterCodigoIdiomaPreferidoArmazenado,
@@ -9,6 +9,7 @@ import { apagarTodosDadosLocais, exportarBackupPapiro, restaurarBackupPapiro } f
 import { nomeArquivoBackup } from '../../modules/backup/dominio/pacote-backup.js';
 import type { PaginaMontavel } from '../pagina-montavel.js';
 import { EVENTO_LOCALE_ATUALIZADO, obterLocaleAtual } from '../../modules/shared/ui/locale.js';
+import { rotuloTemaVisual } from '../../modules/shared/ui/menu-navegacao.js';
 import { criarCardUi, criarGrid, criarPaginaUi } from '../ui/layout.js';
 import { definirTituloDocumentoApp, reporTituloDocumentoSoNomeApp } from '../ui/titulo-documento.js';
 
@@ -18,8 +19,16 @@ export function obterCodigoIdiomaGravado(): string {
 
 const ID_SELECT_IDIOMA_CONFIG = 'papiro-config-select-idioma';
 
+/** Remontagens da página de config (ex.: idioma) sem sair da rota: aborta listeners do bloco tema. */
+let abortConfigTema: AbortController | null = null;
+
 function montarPainelConfiguracao(container: HTMLElement, sinal: AbortSignal): void {
   if (sinal.aborted) return;
+
+  abortConfigTema?.abort();
+  abortConfigTema = new AbortController();
+  const signTema = abortConfigTema.signal;
+  sinal.addEventListener('abort', () => abortConfigTema?.abort(), { once: true });
 
   const loc = obterLocaleAtual();
   const s = obterTextosConfig(loc);
@@ -31,20 +40,31 @@ function montarPainelConfiguracao(container: HTMLElement, sinal: AbortSignal): v
   const textoTema = document.createElement('p');
   textoTema.className = 'shell__sub';
   function textoTemaAtual(): void {
-    const tv: TemaVisual = obterTemaPreferido();
-    const textoVal = tv === 'breu' ? s.temaValorBreu : s.temaValorClaro;
-    textoTema.textContent = `${s.temaAtual}: ${textoVal}.`;
+    textoTema.textContent = `${s.temaAtual}: ${rotuloTemaVisual(obterTemaPreferido(), loc)}.`;
   }
   textoTemaAtual();
+
+  const pTemaAjuda = document.createElement('p');
+  pTemaAjuda.className = 'shell__sub';
+  pTemaAjuda.textContent = s.temaAjuda;
+
   const btnTema = document.createElement('button');
   btnTema.type = 'button';
   btnTema.className = 'shell__acao-primaria-botao';
-  btnTema.textContent = s.temaBotao;
-  btnTema.addEventListener('click', () => {
-    alternarTemaBreu();
-    textoTemaAtual();
-  });
+  instalarBotaoCicloTema(btnTema, loc, signTema);
 
+  const onTemaLinha = (): void => {
+    if (sinal.aborted) return;
+    textoTemaAtual();
+  };
+  window.addEventListener(EVENTO_TEMA_VISUAL_ATUALIZADO, onTemaLinha);
+  signTema.addEventListener(
+    'abort',
+    () => {
+      window.removeEventListener(EVENTO_TEMA_VISUAL_ATUALIZADO, onTemaLinha);
+    },
+    { once: true },
+  );
   const pId = document.createElement('p');
   pId.className = 'shell__sub';
   pId.textContent = s.idiomaDescricao;
@@ -144,7 +164,7 @@ function montarPainelConfiguracao(container: HTMLElement, sinal: AbortSignal): v
 
   pagina.corpo.append(
     criarGrid(
-      criarCardUi({ titulo: s.temaSecao, conteudo: [textoTema, btnTema] }).cartao,
+      criarCardUi({ titulo: s.temaSecao, conteudo: [textoTema, pTemaAjuda, btnTema] }).cartao,
       criarCardUi({ titulo: s.idiomaSecao, conteudo: [pId, sel, btnId] }).cartao,
       criarCardUi({ titulo: s.pinSecao, conteudo: [pPin, inpPin] }).cartao,
       criarCardUi({ titulo: s.backupSecao, conteudo: [backupStatus, btnExportar, inputImportar, btnImportar] }).cartao,

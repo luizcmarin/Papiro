@@ -1,3 +1,4 @@
+import type { TemaVisual } from '../../../app/tema.js';
 import type { LocaleId } from './locale.js';
 
 /** Chaves estáveis alinhadas a `menu-rotas.ts` (não usar como texto direto na UI). */
@@ -60,21 +61,41 @@ export function textoRotuloNavegacao(chave: ChaveNav, locale: LocaleId): string 
 
 export function textosTopoShell(locale: LocaleId): {
   botaoAbrirMenu: string;
-  botaoTema: string;
+  temaRotuloClaro: string;
+  temaRotuloEscuro: string;
+  temaRotuloBreu: string;
+  temaCicloAria: string;
   gavetaLabel: string;
   navAria: string;
 } {
   return locale === 'en'
     ? {
         botaoAbrirMenu: 'Menu',
-        botaoTema: 'Light / Dark',
+        temaRotuloClaro: 'Light',
+        temaRotuloEscuro: 'Dark',
+        temaRotuloBreu: 'Tactical',
+        temaCicloAria: 'Cycle theme: each click advances through light, dark, and tactical.',
         gavetaLabel: 'Navigation',
         navAria: 'Main navigation',
       }
     : {
         botaoAbrirMenu: 'Menu',
-        botaoTema: 'Claro / Breu',
+        temaRotuloClaro: 'Claro',
+        temaRotuloEscuro: 'Escuro',
+        temaRotuloBreu: 'Breu',
+        temaCicloAria: 'Alternar tema: cada clique avança entre claro, escuro e breu tático.',
         gavetaLabel: 'Navegação',
         navAria: 'Principal',
       };
+}
+
+export function rotuloTemaVisual(tema: TemaVisual, locale: LocaleId): string {
+  const t = textosTopoShell(locale);
+  if (tema === 'claro') return t.temaRotuloClaro;
+  if (tema === 'escuro') return t.temaRotuloEscuro;
+  return t.temaRotuloBreu;
+}
+
+export function textoAriaCicloTema(locale: LocaleId): string {
+  return textosTopoShell(locale).temaCicloAria;
 }

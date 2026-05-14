@@ -28,6 +28,7 @@ Quando existir conteúdo de boas-vindas na base local, o Papiro pode criar uma a
 
 | Documento | Conteúdo |
 | :-- | :-- |
+| [CHECKLIST_REVISAO_MANUAL.md](./CHECKLIST_REVISAO_MANUAL.md) | Revisão manual ordenada (QA) |
 | [DOCUMENTACAO.md](./DOCUMENTACAO.md) | Stack, arquitetura `src/`, router SPA, estado macro, comandos |
 | [BANCO_DE_DADOS.md](./BANCO_DE_DADOS.md) | SQLite, SQLocal, sync, lazy selection |
 | [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) | Web Awesome, tema Claro/Breu |

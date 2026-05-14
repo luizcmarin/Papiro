@@ -3,10 +3,8 @@ import type { LocaleId } from '../../shared/ui/locale.js';
 const PT = {
   titulo: 'Configurações',
   temaSecao: 'Tema visual',
-  temaBotao: 'Alternar claro / breu',
+  temaAjuda: 'Um botão na barra superior e outro aqui: cada clique passa por claro, escuro e breu tático (superfícies e accent da marca).',
   temaAtual: 'Tema atual',
-  temaValorBreu: 'Breu',
-  temaValorClaro: 'Claro',
   idiomaSecao: 'Idioma da interface',
   idiomaDescricao:
     'O inglês está disponível para navegação e Wave 1; outras fatias continuam só em pt-BR por agora.',
@@ -35,10 +33,8 @@ const PT = {
 const EN = {
   titulo: 'Settings',
   temaSecao: 'Theme',
-  temaBotao: 'Toggle light / dark',
+  temaAjuda: 'One button in the top bar and one here: each click cycles light, dark, and tactical (brand surfaces and accent).',
   temaAtual: 'Current theme',
-  temaValorBreu: 'Dark',
-  temaValorClaro: 'Light',
   idiomaSecao: 'Interface language',
   idiomaDescricao:
     'English applies to navigation and Wave 1 screens; deeper modules remain pt-BR for now.',

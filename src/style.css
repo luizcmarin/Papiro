@@ -23,13 +23,71 @@ body {
   min-height: 100vh;
 }
 
-.shell__topo {
+.shell__topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--wa-color-surface-border, #00000022);
+  background: var(--wa-color-surface-raised-subtle, transparent);
+}
+
+.shell__topbar-inicio {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--wa-color-surface-border, #00000022);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.shell__topbar-fim {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+}
+
+/*
+ * Modo Breu — identidade visual principal (“Santuário digital”): profundidade em azul-marinho
+ * (sem #000 puro), accent neon, luz interior `--elev-glow`.
+ * Web Awesome usa `neutral-05`…`95` e `brand-05`…`95` (não expõe neutral-950 / primary-500);
+ * aliases documentais ficam abaixo para alinhar à doc de produto.
+ */
+html.wa-dark.papiro-tema-breu {
+  color-scheme: dark;
+
+  --elev-glow: 0 0 0 1px rgba(79, 195, 247, 0.12), 0 0 28px rgba(79, 195, 247, 0.15);
+
+  --wa-color-neutral-05: #0b0f15;
+  --wa-color-neutral-10: #131820;
+  --wa-color-neutral-20: #1c2330;
+  --wa-color-neutral-30: #252e3e;
+  --wa-color-neutral-40: #2e3a4f;
+
+  --wa-color-brand-05: #0f1c2d;
+  --wa-color-brand-10: #152a45;
+  --wa-color-brand-20: #1e3a5f;
+  --wa-color-brand-30: #265080;
+  --wa-color-brand-40: #2f6a9e;
+  --wa-color-brand-50: #4fc3f7;
+  --wa-color-brand-60: #81d4fa;
+  --wa-color-brand-70: #b3e5fc;
+
+  --wa-color-neutral-950: var(--wa-color-neutral-05);
+  --wa-color-primary-500: var(--wa-color-brand-50);
+
+  --wa-color-brand-on-loud: #0a0e14;
+  --wa-color-focus: #4fc3f7;
+  --wa-color-text-link: #81d4fa;
+  --wa-color-shadow: color-mix(in srgb, #000000 45%, transparent);
+}
+
+html.wa-dark.papiro-tema-breu .shell__cartao,
+html.wa-dark.papiro-tema-breu wa-card.shell__cartao {
+  box-shadow: var(--elev-glow), 0 0.75rem 2rem color-mix(in srgb, var(--wa-color-text-normal) 10%, transparent);
 }
 
 .shell__principal {
@@ -270,6 +328,8 @@ wa-card.shell__cartao {
 
 .shell__icone {
   flex-shrink: 0;
+  display: block;
+  color: var(--wa-color-text-normal, CanvasText);
 }
 
 /* —— Wave 1: listagens, formulários, TipTap —— */

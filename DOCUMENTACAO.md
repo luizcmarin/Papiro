@@ -10,6 +10,7 @@
 | [`BANCO_DE_DADOS.md`](./BANCO_DE_DADOS.md) | SQLite, `id_remoto`, lazy selection, sync, queries |
 | [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md) | Web Awesome, tema Claro/Breu, layout, ECharts |
 | [`GUIA_USUARIO.md`](./GUIA_USUARIO.md) | Fluxos por módulo (visão geral no [`README`](./README.md#sobre-o-produto)) |
+| [`CHECKLIST_REVISAO_MANUAL.md`](./CHECKLIST_REVISAO_MANUAL.md) | Sequência sugerida para revisão manual / QA |
 | [`AGENTS.md`](./AGENTS.md) | Orientação para assistentes no repositório |
 | [`basedados.json`](./basedados.json) | Esquema relacional gerado para migrações |
 
@@ -178,4 +179,4 @@ CI de referência: `.github/workflows/ci.yml` (Bun pinado no projeto).
 
 ## Documentação relacionada
 
-[`BANCO_DE_DADOS.md`](./BANCO_DE_DADOS.md) · [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md) · [`GUIA_USUARIO.md`](./GUIA_USUARIO.md) · [`AGENTS.md`](./AGENTS.md) · [`basedados.json`](./basedados.json) · [`README.md`](./README.md)
+[`BANCO_DE_DADOS.md`](./BANCO_DE_DADOS.md) · [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md) · [`GUIA_USUARIO.md`](./GUIA_USUARIO.md) · [`CHECKLIST_REVISAO_MANUAL.md`](./CHECKLIST_REVISAO_MANUAL.md) · [`AGENTS.md`](./AGENTS.md) · [`basedados.json`](./basedados.json) · [`README.md`](./README.md)

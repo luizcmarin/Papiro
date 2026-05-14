@@ -3,7 +3,7 @@ import '@awesome.me/webawesome/dist/components/dialog/dialog.js';
 
 import { garantirEchartsRegistrado } from '../../infra/charts/echarts-bundle.js';
 import type { EChartsType } from '../../infra/charts/echarts-bundle.js';
-import { lerCoresGraficoDoDocumento } from '../../infra/charts/cores-documento.js';
+import { lerCoresGraficoDoDocumento, opcoesTemaGraficoEcharts } from '../../infra/charts/cores-documento.js';
 import * as repo from '../../modules/metas/dados/repositorio.js';
 import type { MetaRow } from '../../modules/metas/dados/types.js';
 import { classificarPrazoMeta, percentualMeta, sugerirItemMetaModulo } from '../../modules/metas/dominio/progresso-metas.js';
@@ -218,6 +218,7 @@ const metasPagina: PaginaMontavel = {
 
       if (!meta) {
         ch.setOption({
+          ...opcoesTemaGraficoEcharts(),
           title: { text: tm.listaVazia, left: 'center', top: 'center', textStyle: { color: cores.textoSuave } },
         });
         return;
@@ -233,6 +234,7 @@ const metasPagina: PaginaMontavel = {
               { name: '—', value: 100 - pct, itemStyle: { color: cores.linhaGrade } },
             ];
       ch.setOption({
+        ...opcoesTemaGraficoEcharts(),
         title: { text: tm.donutTitulo + `: ${meta.titulo}`, textStyle: { color: cores.textoPrincipal } },
         series: [
           {

@@ -1,7 +1,7 @@
 import { criarControleGeracaoGraficos } from '../../infra/charts/controle-geracao-grafico.js';
 import { garantirEchartsRegistrado } from '../../infra/charts/echarts-bundle.js';
 import type { EChartsType } from '../../infra/charts/echarts-bundle.js';
-import { lerCoresGraficoDoDocumento } from '../../infra/charts/cores-documento.js';
+import { lerCoresGraficoDoDocumento, opcoesTemaGraficoEcharts } from '../../infra/charts/cores-documento.js';
 import * as dashRepo from '../../modules/dashboard/dados/repositorio.js';
 import { obterTextosDashboard } from '../../modules/dashboard/ui/textos-dashboard.js';
 import { eAbortoDom } from '../../modules/shared/dados/aborto-dom.js';
@@ -148,6 +148,7 @@ const dashboardPagina: PaginaMontavel = {
       const pct = Math.max(0, Math.min(100, indiceProntidao.percentual));
 
       cGg.setOption({
+        ...opcoesTemaGraficoEcharts(),
         tooltip: {},
         series: [
           {
@@ -196,6 +197,7 @@ const dashboardPagina: PaginaMontavel = {
       graficosDashboardPagina.push(cFin);
       if (totaisMes.receita <= 0 && totaisMes.despesa <= 0) {
         cFin.setOption({
+          ...opcoesTemaGraficoEcharts(),
           title: {
             text: tm.listaVaziaGraficos,
             left: 'center',
@@ -205,6 +207,7 @@ const dashboardPagina: PaginaMontavel = {
         });
       } else {
         cFin.setOption({
+          ...opcoesTemaGraficoEcharts(),
           tooltip: {},
           legend: { bottom: 0, textStyle: { color: cores.textoPrincipal } },
           series: [
@@ -230,6 +233,7 @@ const dashboardPagina: PaginaMontavel = {
       graficosDashboardPagina.push(cMeta);
       if (contMeta.abertas === 0 && contMeta.concluidas === 0) {
         cMeta.setOption({
+          ...opcoesTemaGraficoEcharts(),
           title: {
             text: tm.listaVaziaGraficos,
             left: 'center',
@@ -239,6 +243,7 @@ const dashboardPagina: PaginaMontavel = {
         });
       } else {
         cMeta.setOption({
+          ...opcoesTemaGraficoEcharts(),
           tooltip: {},
           legend: { bottom: 0, textStyle: { color: cores.textoPrincipal } },
           series: [

@@ -1,7 +1,7 @@
 import { criarControleGeracaoGraficos } from '../../infra/charts/controle-geracao-grafico.js';
 import { garantirEchartsRegistrado } from '../../infra/charts/echarts-bundle.js';
 import type { EChartsType } from '../../infra/charts/echarts-bundle.js';
-import { lerCoresGraficoDoDocumento } from '../../infra/charts/cores-documento.js';
+import { lerCoresGraficoDoDocumento, opcoesTemaGraficoEcharts } from '../../infra/charts/cores-documento.js';
 import * as repo from '../../modules/financeiro/dados/repositorio.js';
 import type {
   CategoriaFinanceiroRow,
@@ -376,6 +376,7 @@ const financeiroPagina: PaginaMontavel = {
         const cBar = echarts.init(divBar);
         graficosFinanceiroPaginaAtual.push(cBar);
         cBar.setOption({
+          ...opcoesTemaGraficoEcharts(),
           title: { show: false },
           textStyle: { color: cores.textoPrincipal },
           tooltip: {},
@@ -432,6 +433,7 @@ const financeiroPagina: PaginaMontavel = {
         graficosFinanceiroPaginaAtual.push(cPie);
         if (agrega.length === 0) {
           cPie.setOption({
+            ...opcoesTemaGraficoEcharts(),
             title: {
               text: tmGraf.listaVaziaGraficos,
               left: 'center',
@@ -448,6 +450,7 @@ const financeiroPagina: PaginaMontavel = {
           return;
         }
         cPie.setOption({
+          ...opcoesTemaGraficoEcharts(),
           tooltip: {},
           legend: {
             orient: 'vertical',

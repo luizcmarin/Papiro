@@ -1,31 +1,50 @@
-const CHAVE_ARMAZENAMENTO = 'papiro-tema-visual';
+const CHAVE_ARMAZENAMENTO = 'papiro-tema-aparencia';
 
-export type TemaVisual = 'claro' | 'breu';
+export type TemaVisual = 'claro' | 'escuro' | 'breu';
+
+export const EVENTO_TEMA_VISUAL_ATUALIZADO = 'papiro-tema-visual-atualizado';
+
+const ORDEM_TEMA: readonly TemaVisual[] = ['claro', 'escuro', 'breu'];
 
 export function obterTemaPreferido(): TemaVisual {
   const gravado = localStorage.getItem(CHAVE_ARMAZENAMENTO);
-  if (gravado === 'breu' || gravado === 'claro') {
+  if (gravado === 'claro' || gravado === 'escuro' || gravado === 'breu') {
     return gravado;
   }
-  return globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'breu' : 'claro';
+  return globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'escuro' : 'claro';
 }
 
 export function aplicarTemaNoDocumento(tema: TemaVisual): void {
   const raiz = document.documentElement;
-  raiz.classList.remove('wa-light', 'wa-dark');
-  raiz.classList.add(tema === 'breu' ? 'wa-dark' : 'wa-light');
+  raiz.classList.remove('wa-light', 'wa-dark', 'papiro-tema-breu');
+  if (tema === 'claro') {
+    raiz.classList.add('wa-light');
+  } else {
+    raiz.classList.add('wa-dark');
+    if (tema === 'breu') {
+      raiz.classList.add('papiro-tema-breu');
+    }
+  }
 }
 
 export function guardarTemaPreferido(tema: TemaVisual): void {
   localStorage.setItem(CHAVE_ARMAZENAMENTO, tema);
 }
 
-export function alternarTemaBreu(): TemaVisual {
-  const atualBreu = document.documentElement.classList.contains('wa-dark');
-  const proximo: TemaVisual = atualBreu ? 'claro' : 'breu';
-  aplicarTemaNoDocumento(proximo);
-  guardarTemaPreferido(proximo);
-  return proximo;
+export function definirTemaVisual(tema: TemaVisual): void {
+  aplicarTemaNoDocumento(tema);
+  guardarTemaPreferido(tema);
+  window.dispatchEvent(
+    new CustomEvent<{ tema: TemaVisual }>(EVENTO_TEMA_VISUAL_ATUALIZADO, { detail: { tema } }),
+  );
+}
+
+export function rodarTemaSeguinte(): void {
+  const atual = obterTemaPreferido();
+  const i = ORDEM_TEMA.indexOf(atual);
+  const base = i >= 0 ? i : 0;
+  const proximo = ORDEM_TEMA[(base + 1) % ORDEM_TEMA.length]!;
+  definirTemaVisual(proximo);
 }
 
 export function inicializarTemaDoArmazenamento(): void {

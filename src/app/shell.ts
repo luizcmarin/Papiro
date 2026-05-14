@@ -9,7 +9,8 @@ import {
   type ChaveNav,
 } from '../modules/shared/ui/menu-navegacao.js';
 import { hrefParaRota, ITENS_MENU_ROTAS } from './menu-rotas.js';
-import { alternarTemaBreu, inicializarTemaDoArmazenamento } from './tema.js';
+import { inicializarTemaDoArmazenamento } from './tema.js';
+import { atualizarRotuloBotaoCicloTema, instalarBotaoCicloTema } from './tema-controle-ui.js';
 import { obterClienteSqlocal } from '../infra/db/cliente-sqlocal.js';
 
 type WaDrawerElement = HTMLElement & { open: boolean };
@@ -24,8 +25,8 @@ export function atualizarRotulosInternosShell(raizApp: HTMLElement, locale?: Loc
   if (nav) nav.setAttribute('aria-label', topo.navAria);
   const btnMenu = raizApp.querySelector('#btn-abrir-menu');
   if (btnMenu) btnMenu.textContent = topo.botaoAbrirMenu;
-  const btnTema = raizApp.querySelector('#btn-tema');
-  if (btnTema) btnTema.textContent = topo.botaoTema;
+  const btnTema = raizApp.querySelector('#topbar-btn-tema');
+  if (btnTema instanceof HTMLElement) atualizarRotuloBotaoCicloTema(btnTema, loc);
 
   for (const item of ITENS_MENU_ROTAS) {
     const a = raizApp.querySelector<HTMLAnchorElement>(`a.shell__nav-linha[data-chave-nav="${item.chaveNav}"]`);
@@ -53,13 +54,17 @@ function textoEstadoBaseDados(locale: LocaleId, numPastas: number): string {
 function montarMarkupShellInicial(): string {
   return `
     <div class="shell">
-      <header class="shell__topo">
-        <wa-drawer id="drawer-nav" label="Navigation" placement="start">
-          <span slot="label">Papiro</span>
-          <nav class="shell__nav" aria-label="Navigation"></nav>
-        </wa-drawer>
-        <wa-button id="btn-abrir-menu" variant="brand">Menu</wa-button>
-        <wa-button id="btn-tema" variant="neutral">Claro / Breu</wa-button>
+      <header class="shell__topbar" data-papiro-topbar>
+        <div class="shell__topbar-inicio">
+          <wa-drawer id="drawer-nav" label="Navigation" placement="start">
+            <span slot="label">Papiro</span>
+            <nav class="shell__nav" aria-label="Navigation"></nav>
+          </wa-drawer>
+          <wa-button id="btn-abrir-menu" variant="brand">Menu</wa-button>
+        </div>
+        <div class="shell__topbar-fim">
+          <wa-button id="topbar-btn-tema" size="s" type="button" variant="neutral">Tema</wa-button>
+        </div>
       </header>
       <main class="shell__principal">
         <div id="outlet-papiro" class="shell__outlet" aria-live="polite"></div>
@@ -69,7 +74,7 @@ function montarMarkupShellInicial(): string {
   `;
 }
 
-function preencherLinksNavegacao(nav: Element): void {
+async function preencherLinksNavegacao(nav: Element): Promise<void> {
   nav.replaceChildren();
   const basePublica = import.meta.env.BASE_URL;
   for (const item of ITENS_MENU_ROTAS) {
@@ -79,15 +84,32 @@ function preencherLinksNavegacao(nav: Element): void {
     a.className = 'shell__nav-linha';
     a.href = href;
     a.dataset.chaveNav = item.chaveNav;
-    const img = document.createElement('img');
-    img.className = 'shell__icone';
-    img.src = `${basePublica}icons/m3/${item.icone}.svg`;
-    img.width = 24;
-    img.height = 24;
-    img.alt = '';
+
+    let icone: SVGSVGElement | null = null;
+    try {
+      const res = await fetch(`${basePublica}icons/m3/${item.icone}.svg`);
+      if (res.ok) {
+        const doc = new DOMParser().parseFromString(await res.text(), 'image/svg+xml');
+        const el = doc.querySelector('svg');
+        if (el instanceof SVGSVGElement) {
+          icone = el;
+          icone.classList.add('shell__icone');
+          icone.setAttribute('width', '24');
+          icone.setAttribute('height', '24');
+          icone.setAttribute('aria-hidden', 'true');
+        }
+      }
+    } catch {
+      /* ícone opcional */
+    }
+
     const span = document.createElement('span');
     span.textContent = textoRotuloNavegacao(item.chaveNav as ChaveNav, obterLocaleAtual());
-    a.append(img, span);
+    if (icone) {
+      a.append(icone, span);
+    } else {
+      a.append(span);
+    }
     nav.append(a);
   }
 }
@@ -99,7 +121,7 @@ export async function montarShell(container: HTMLElement): Promise<void> {
   const shell = container.querySelector('.shell');
   const navEl = container.querySelector('nav.shell__nav');
   if (navEl) {
-    preencherLinksNavegacao(navEl);
+    await preencherLinksNavegacao(navEl);
   }
   const raizParaRotulos = shell instanceof HTMLElement ? shell : container;
   atualizarRotulosInternosShell(raizParaRotulos, obterLocaleAtual());
@@ -110,7 +132,7 @@ export async function montarShell(container: HTMLElement): Promise<void> {
 
   const drawer = container.querySelector('#drawer-nav');
   const btnMenu = container.querySelector('#btn-abrir-menu');
-  const btnTema = container.querySelector('#btn-tema');
+  const btnTema = container.querySelector('#topbar-btn-tema');
   const textoBd = container.querySelector('#texto-estado-bd');
 
   if (btnMenu instanceof HTMLElement && drawer instanceof HTMLElement) {
@@ -121,9 +143,9 @@ export async function montarShell(container: HTMLElement): Promise<void> {
     });
   }
 
-  btnTema?.addEventListener('click', () => {
-    alternarTemaBreu();
-  });
+  if (btnTema instanceof HTMLElement) {
+    instalarBotaoCicloTema(btnTema, obterLocaleAtual());
+  }
 
   try {
     const { sql } = obterClienteSqlocal();

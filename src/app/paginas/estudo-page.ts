@@ -1,6 +1,6 @@
 import { garantirEchartsRegistrado } from '../../infra/charts/echarts-bundle.js';
 import type { EChartsType } from '../../infra/charts/echarts-bundle.js';
-import { lerCoresGraficoDoDocumento } from '../../infra/charts/cores-documento.js';
+import { lerCoresGraficoDoDocumento, opcoesTemaGraficoEcharts } from '../../infra/charts/cores-documento.js';
 import { conquistasParaSessaoEstudo } from '../../modules/estudo/aplicacao/conquistas-estudo.js';
 import { TimerPomodoroController } from '../../modules/estudo/aplicacao/timer-controller.js';
 import type { FaseTimer } from '../../modules/estudo/aplicacao/timer-controller.js';
@@ -193,6 +193,7 @@ const estudoPagina: PaginaMontavel = {
 
       if (focosCron.length === 0) {
         ch.setOption({
+          ...opcoesTemaGraficoEcharts(),
           title: {
             text: t.historicoVazio,
             left: 'center',
@@ -204,6 +205,7 @@ const estudoPagina: PaginaMontavel = {
       }
 
       ch.setOption({
+        ...opcoesTemaGraficoEcharts(),
         textStyle: { color: cores.textoPrincipal },
         grid: { left: 40, right: 12, bottom: 28, top: 24, containLabel: true },
         xAxis: { type: 'category', data: focosCron.map((_, ix) => String(ix + 1)) },

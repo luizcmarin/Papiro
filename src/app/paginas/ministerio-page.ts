@@ -1,6 +1,6 @@
 import { garantirEchartsRegistrado } from '../../infra/charts/echarts-bundle.js';
 import type { EChartsType } from '../../infra/charts/echarts-bundle.js';
-import { lerCoresGraficoDoDocumento } from '../../infra/charts/cores-documento.js';
+import { lerCoresGraficoDoDocumento, opcoesTemaGraficoEcharts } from '../../infra/charts/cores-documento.js';
 import * as repo from '../../modules/ministerio/dados/repositorio.js';
 import type { EstudoBiblicoRow, RelatorioMinisterioRow } from '../../modules/ministerio/dados/types.js';
 import {
@@ -262,10 +262,12 @@ const ministerioPagina: PaginaMontavel = {
       ministerioGraficosPagina.push(cBarra);
       if (ord.length === 0) {
         cBarra.setOption({
+          ...opcoesTemaGraficoEcharts(),
           title: { text: tm.semRelatorios, left: 'center', top: 'middle', textStyle: { color: cores.textoSuave } },
         });
       } else {
         cBarra.setOption({
+          ...opcoesTemaGraficoEcharts(),
           textStyle: { color: cores.textoPrincipal },
           tooltip: {},
           grid: { left: 56, bottom: 32, containLabel: true },
@@ -282,6 +284,7 @@ const ministerioPagina: PaginaMontavel = {
       const pct = topo ? Math.min(100, (100 * Number(topo.horas)) / objetivoMeta) : 0;
 
       cGg.setOption({
+        ...opcoesTemaGraficoEcharts(),
         tooltip: {},
         series: [
           {
